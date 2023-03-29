@@ -1,0 +1,92 @@
+default:
+  tags:
+    - devsecops-instance
+  
+# Add `dast` to your `stages:` configuration
+stages:
+  - dast
+
+# Include the DAST template
+include:
+  - template: DAST.gitlab-ci.yml
+
+# Your selected site and scanner profiles:
+dast:
+  stage: dast
+  dast_configuration:
+    site_profile: "Waterway Active Scan"
+    scanner_profile: "Waterway Active Scanner "
+
+  variables:
+    DAST_FULL_SCAN_ENABLED: "true"
+
+  allow_failure: false
+  timeout: 24h
+
+
+
+# include:
+  # - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  # - template: Jobs/Secret-Detection.gitlab-ci.yml
+  # - template: Jobs/SAST.gitlab-ci.yml
+  # - template: Jobs/License-Scanning.gitlab-ci.yml
+#   - template: DAST.gitlab-ci.yml
+#   - template: DAST-API.gitlab-ci.yml
+
+# variables:
+#   SECURE_ANALYZERS_PREFIX: "$CI_TEMPLATE_REGISTRY_HOST/security-products"
+#   DAST_API_IMAGE: api-security
+#   DAST_API_VERSION: "2"
+#   DAST_API_IMAGE_SUFFIX: ""
+#   DAST_API_OPENAPI: "docs/hmw_swagger2.json"
+#   DAST_API_TARGET_URL: "https://mywaterway-stage.app.cloud.gov/"
+
+# stages:
+#   - test
+#   - dast
+#   - build
+
+# dast:
+#   variables:
+#     DAST_WEBSITE: "https://mywaterway-stage.app.cloud.gov/"
+#     DAST_BROWSER_SCAN: "true"
+#     DAST_BROWSER_NUMBER_OF_BROWSERS: 7
+#     DAST_BROWSER_MAX_ACTIONS: 5000
+#     DAST_BROWSER_MAX_DEPTH: 5
+#     DAST_FULL_SCAN_ENABLED: "true"
+#   allow_failure: false
+#   timeout: 24h
+#   dependencies: []
+
+
+# dast_api:
+#   stage: dast
+#   image: $SECURE_ANALYZERS_PREFIX/$DAST_API_IMAGE:$DAST_API_VERSION$DAST_API_IMAGE_SUFFIX
+#   allow_failure: true
+#   rules:
+#     - if: $DAST_API_DISABLED
+#       when: never
+#     - if: $DAST_API_DISABLED_FOR_DEFAULT_BRANCH &&
+#           $CI_DEFAULT_BRANCH == $CI_COMMIT_REF_NAME
+#       when: never
+#     - if: $CI_COMMIT_BRANCH &&
+#           $CI_GITLAB_FIPS_MODE == "true"
+#       variables:
+#         DAST_API_IMAGE_SUFFIX: "-fips"
+#     - if: $CI_COMMIT_BRANCH
+#   script:
+#     - /peach/analyzer-dast-api
+#   artifacts:
+#     when: always
+#     paths:
+#       - gl-assets
+#       - gl-dast-api-report.json
+#       - gl-*.log
+#     reports:
+#       dast: gl-dast-api-report.json
+  
+
+# build:
+#   stage: build
+#   script:
+#     - echo build job ran
